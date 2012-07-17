@@ -1,20 +1,14 @@
 <?php
+require_once ( 'config.php' );
 require_once ( 'NScheme.class.php' );
 
-/*$client = new TinyRedisClient( ':6379' );
-var_dump( $client->set( 'key', 'value' ) );
-var_dump( $client->get( 'key' ) );
-var_dump( $client->get( 'key1' ) );
-var_dump( $client->keys( '*' ) );
-var_dump( $client->incr( 'counter' ) );*/
 class MyScheme extends NScheme
 {
 	public function __construct()
 	{
-		parent::__construct( ':6379' );
-		$this->_allowDirectAccess( false );
-		$this->_scheme( 
-			array( 'title' => 'value', 'logins' => 'set', 'users' => array( 'hash', array( 'permits' => 'set' ) ) ) );
+		parent::__construct( SERVER );
+		$this->_allowDirectAccess( true );
+		$this->_scheme( array( 'title'/*, 'logins' => 'set', 'dict' => 'hash', 'users' => array( 'name', 'email' ) */) );
 	}
 }
 
@@ -23,14 +17,23 @@ $myScheme = new MyScheme();
 var_dump( $myScheme->title->set( 'MyTitle' ) );
 var_dump( $myScheme->title->get() );
 
-var_dump( $myScheme->logins->add( 'new-user' ) );
-var_dump( $myScheme->logins->exists( 'new-user' ) );
-var_dump( $myScheme->logins->exists( 'old-user' ) );
-var_dump( $myScheme->logins->get() );
+// var_dump( $myScheme->title = 'MyTitle 2' );
+// var_dump( $myScheme->title );
 
-var_dump( $myScheme->users->add( 'new-user' ) );
-var_dump( $myScheme->users->exists( 'new-user' ) );
-var_dump( $myScheme->users->get() );
+// var_dump( $myScheme->title->set( 'MyTitle' ) );
+// var_dump( $myScheme->title->get() );
 
-//$myScheme->users->get( 'new-user' )->permits->exists( 'type_edit' );
+// var_dump( $myScheme->logins->add( 'new-user' ) );
+// var_dump( $myScheme->logins->exists( 'new-user' ) );
+// var_dump( $myScheme->logins->exists( 'old-user' ) );
+// var_dump( $myScheme->logins->get() );
 
+// var_dump( $myScheme->dict->set( 'new-user', 'data' ) );
+// var_dump( $myScheme->dict->exists( 'new-user' ) );
+// var_dump( $myScheme->dict->get( 'new-user' ) );
+
+//$myScheme->users->get( 'new-user' )->permits->exists( 'edit_type_area' );
+
+//$myScheme->users[ 'new-user' ]->permits->exists( 'wer' );
+
+//$myScheme->users[] = 'ert';

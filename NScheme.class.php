@@ -48,6 +48,24 @@ class NSchemeSet extends NSchemeBase
 	}
 }
 
+class NSchemeHash extends NSchemeBase
+{
+	public function set( $key, $value )
+	{
+		return $this->_client->hset( $this->_key, $key, $value );
+	}
+	
+	public function exists( $key )
+	{
+		return $this->_client->hexists( $this->_key, $key );
+	}
+	
+	public function get( $key )
+	{
+		return $this->_client->hget( $this->_key, $key );
+	}
+}
+
 class NScheme
 {
 	private $_client, $_direct, $_types, $_list;
@@ -56,7 +74,7 @@ class NScheme
 	{
 		$this->_client = new TinyRedisClient( $server );
 		$this->_direct = false;
-		$this->_types = array( 'value' => 'NSchemeValue', 'set' => 'NSchemeSet' );
+		$this->_types = array( 'value' => 'NSchemeValue', 'set' => 'NSchemeSet', 'hash' => 'NSchemeHash' );
 		$this->_list = array();
 	}
 	
