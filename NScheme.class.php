@@ -28,6 +28,11 @@ class NSchemeValue extends NSchemeBase
 	{
 		return $this->_client->get( $this->_key );
 	}
+	
+	public function __toString()
+	{
+		return $this->get();
+	}
 }
 
 class NSchemeSet extends NSchemeBase
@@ -95,9 +100,10 @@ class NScheme
 	{
 		foreach ( $scheme as $key => $value )
 		{
-			if ( is_array( $value ) )
+			if ( is_int( $key ) )
 			{
-				$value = $value[ 0 ];
+				$key = $value;
+				$value = 'value';
 			}
 			if ( !isset( $this->_types[ $value ] ) )
 			{
@@ -113,12 +119,21 @@ class NScheme
 		{
 			throw new Exception( sprintf( 'Key "%s" not found', $key ) );
 		}
+		if ( $this->_list[ $key ] instanceof NSchemeValue )
+		{
+			return $this->_list[ $key ]->get();
+		}
 		return $this->_list[ $key ];
 	}
 	
 	public function __set( $key, $value )
 	{
-		throw new Exception( 'Forbidden to set properties' );
+		//throw new Exception( 'Forbidden to set properties' );
+		if ( !isset( $this->_list[ $key ] ) )
+		{
+			throw new Exception( sprintf( 'Key "%s" not found', $key ) );
+		}
+		return $this->_list[ $key ]->set( $value );
 	}
 	
 	public function __isset( $key )
