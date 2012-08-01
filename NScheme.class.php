@@ -29,6 +29,11 @@ class NSchemeValue extends NSchemeBase
 		return $this->_client->get( $this->_key );
 	}
 	
+	public function del()
+	{
+		return $this->_client->del( $this->_key );
+	}
+	
 	public function __toString()
 	{
 		return $this->get();
@@ -53,7 +58,7 @@ class NSchemeSet extends NSchemeBase
 	}
 }
 
-class NSchemeHash extends NSchemeBase
+class NSchemeHash extends NSchemeBase implements ArrayAccess
 {
 	public function set( $key, $value )
 	{
@@ -69,6 +74,24 @@ class NSchemeHash extends NSchemeBase
 	{
 		return $this->_client->hget( $this->_key, $key );
 	}
+	
+	public function offsetSet( $offset, $value )
+	{
+		return $this->set( $offset, $value );
+	}
+	public function offsetExists( $offset )
+	{
+		return $this->exists( $offset );
+	}
+	public function offsetUnset( $offset )
+	{
+		return $this->set( $offset, null );
+	}
+	public function offsetGet( $offset )
+	{
+		return $this->get( $offset );
+	}
+
 }
 
 class NScheme
@@ -128,7 +151,6 @@ class NScheme
 	
 	public function __set( $key, $value )
 	{
-		//throw new Exception( 'Forbidden to set properties' );
 		if ( !isset( $this->_list[ $key ] ) )
 		{
 			throw new Exception( sprintf( 'Key "%s" not found', $key ) );
@@ -143,6 +165,10 @@ class NScheme
 	
 	public function __unset( $key )
 	{
-		throw new Exception( 'Forbidden to unset properties' );
+		if ( !isset( $this->_list[ $key ] ) )
+		{
+			throw new Exception( sprintf( 'Key "%s" not found', $key ) );
+		}
+		return $this->_list[ $key ]->del();
 	}
 }

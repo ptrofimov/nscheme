@@ -7,21 +7,44 @@ class MyScheme extends NScheme
 	public function __construct()
 	{
 		parent::__construct( SERVER );
-		$this->_allowDirectAccess( true );
+		$this->_allowDirectAccess( false );
+		$this->_define( 'user', 'hash', array( 'name', 'login', 'email' ) );
+		$this->_define( 'users', 'set', 'user' );
 		$this->_scheme( 
-			array( 'title', 'users' => array( 'name', 'email' )/*, 'logins' => 'set', 'dict' => 'hash', 'users' => array( 'name', 'email' ) */) );
+			array( 
+				'value', 
+				'hash' => 'hash', 
+				'user' => array( 'hash', array( 'name', 'login', 'email', 'rights' => 'set' ) ), 
+				'users' => array( 'set', 'user' ), 
+				'urls' => 'queue' ) );
 	}
 }
 
-$myScheme = new MyScheme();
-
-var_dump( $myScheme->title = 'MyTitle 2' );
-var_dump( $myScheme->title );
-
-var_dump( $myScheme->users['nick'] = array( 'name' => 'Name', 'email' => 'Email' ) );
-//$myScheme->users['nick']->name
+// user is hash [name,login,email]
+// users is set of user
 
 
+// picture as hash of url,alt,height,width
+// gallery as set of picture
+// galleries is list of gallery
+// 
+// user is hash of name,login,email
+// users is set of user 
 
-//sets users[]=5 users->add(5) users->exists(5) users
-//lists users[]->
+$my = new MyScheme();
+
+var_dump( $my->value = 'new_value' );
+var_dump( $my->value );
+var_dump( isset( $my->value ) );
+unset( $my->value );
+var_dump( $my->value );
+var_dump( isset( $my->value ) );
+var_dump( isset( $my->wrongvalue ) );
+
+var_dump( $my->hash[ 'key' ] = 'value' );
+var_dump( $my->hash[ 'key' ] );
+var_dump( $my->hash[ 'key_wrong' ] );
+
+
+
+
