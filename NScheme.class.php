@@ -91,7 +91,6 @@ class NSchemeHash extends NSchemeBase implements ArrayAccess
 	{
 		return $this->get( $offset );
 	}
-
 }
 
 class NScheme
@@ -119,21 +118,13 @@ class NScheme
 		}
 	}
 	
-	protected function _scheme( array $scheme )
+	protected function _define( $key, $type = 'value', $value = 'value' )
 	{
-		foreach ( $scheme as $key => $value )
+		if ( !isset( $this->_types[ $type ] ) )
 		{
-			if ( is_int( $key ) )
-			{
-				$key = $value;
-				$value = 'value';
-			}
-			if ( !isset( $this->_types[ $value ] ) )
-			{
-				throw new Exception( sprintf( 'Invalid data type "%s"', $value ) );
-			}
-			$this->_list[ $key ] = new $this->_types[ $value ]( $this->_client, $key );
+			throw new Exception( sprintf( 'Invalid data type "%s"', $type ) );
 		}
+		$this->_list[ $key ] = new $this->_types[ $type ]( $this->_client, $key );
 	}
 	
 	public function __get( $key )
