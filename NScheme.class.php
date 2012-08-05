@@ -58,6 +58,37 @@ class NSchemeSet extends NSchemeBase
 	}
 }
 
+class NSchemeQueue extends NSchemeBase
+{
+	public function push( $value )
+	{
+		return $this->_client->rpush( $this->_key, $value );
+	}
+	
+	public function isEmpty()
+	{
+		return $this->_client->llen( $this->_key ) == 0;
+	}
+	
+	public function shift()
+	{
+		return $this->_client->lpop( $this->_key );
+	}
+}
+
+class NSchemeStack extends NSchemeBase
+{
+	public function push( $value )
+	{
+		return $this->_client->rpush( $this->_key, $value );
+	}
+	
+	public function pop()
+	{
+		return $this->_client->rpop( $this->_key );
+	}
+}
+
 class NSchemeHash extends NSchemeBase implements ArrayAccess
 {
 	public function set( $key, $value )
@@ -101,7 +132,12 @@ class NScheme
 	{
 		$this->_client = new TinyRedisClient( $server );
 		$this->_direct = false;
-		$this->_types = array( 'value' => 'NSchemeValue', 'set' => 'NSchemeSet', 'hash' => 'NSchemeHash' );
+		$this->_types = array( 
+			'value' => 'NSchemeValue', 
+			'set' => 'NSchemeSet', 
+			'hash' => 'NSchemeHash', 
+			'queue' => 'NSchemeQueue', 
+			'stack' => 'NSchemeStack' );
 		$this->_list = array();
 	}
 	
