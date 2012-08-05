@@ -3,17 +3,54 @@ require_once ( 'TinyRedisClient.class.php' );
 
 class NSchemeBase
 {
-	protected $_client, $_key;
+	protected $_client, $_key, $_value;
 	
-	public function __construct( $client, $key )
+	public function __construct( $client, $key, $value )
 	{
 		$this->_client = $client;
 		$this->_key = $key;
+		if ( is_array( $value ) )
+		{
+			$this->_value = new NSchemeStruct( $value, $this );
+		}
+		else
+		{
+			$this->_value = 'value';
+		}
 	}
 	
 	public function getKey()
 	{
 		return $this->_key;
+	}
+}
+
+class NSchemeStruct
+{
+	private $_fields, $_parent, $_value;
+	
+	public function __construct( array $value, $parent )
+	{
+		$this->_fields = $value;
+		$this->_parent = $parent;
+	}
+	
+	public function __set( $key, $value )
+	{
+		if ( !isset( $this->_fields[ $key ] ) )
+		{
+			throw new Exception( sprintf( 'Key "%s" not found', $key ) );
+		}
+		$this->_value[ $key ] = $value;
+		//return
+	}
+	
+	public function __get( $key )
+	{
+		if ( !isset( $this->_fields[ $key ] ) )
+		{
+			throw new Exception( sprintf( 'Key "%s" not found', $key ) );
+		}
 	}
 }
 
@@ -26,7 +63,15 @@ class NSchemeValue extends NSchemeBase
 	
 	public function get()
 	{
-		return $this->_client->get( $this->_key );
+		if ( $this->_value != 'value' )
+		{
+			var_dump( 'ARRAY' );
+			return $this;
+		}
+		else
+		{
+			return $this->_client->get( $this->_key );
+		}
 	}
 	
 	public function del()
@@ -37,6 +82,12 @@ class NSchemeValue extends NSchemeBase
 	public function __toString()
 	{
 		return $this->get();
+	}
+	
+	public function __set( $key, $value )
+	{
+		var_dump( 'SET' );
+		
 	}
 }
 
@@ -160,7 +211,7 @@ class NScheme
 		{
 			throw new Exception( sprintf( 'Invalid data type "%s"', $type ) );
 		}
-		$this->_list[ $key ] = new $this->_types[ $type ]( $this->_client, $key );
+		$this->_list[ $key ] = new $this->_types[ $type ]( $this->_client, $key, $value );
 	}
 	
 	public function __get( $key )
@@ -171,6 +222,7 @@ class NScheme
 		}
 		if ( $this->_list[ $key ] instanceof NSchemeValue )
 		{
+			var_dump( 'GET' );
 			return $this->_list[ $key ]->get();
 		}
 		return $this->_list[ $key ];

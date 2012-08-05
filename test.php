@@ -12,6 +12,7 @@ class MyScheme extends NScheme
 		$this->_define( 'some_hash', 'hash' );
 		$this->_define( 'some_queue', 'queue' );
 		$this->_define( 'some_stack', 'stack' );
+		$this->_define( 'value_of_struct', 'value', array( 'value' ) );
 	}
 }
 
@@ -34,3 +35,6 @@ var_dump( $my->some_queue->shift() );
 
 var_dump( $my->some_stack->push( 'stack_value' ) );
 var_dump( $my->some_stack->pop() );
+
+var_dump( $my->value_of_struct->value = 'value_of_struct' );
+//var_dump( $my->value_of_stuct->value );
