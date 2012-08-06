@@ -16,7 +16,7 @@ class MyScheme extends NScheme
 {
 	public function __construct()
 	{
-		parent::__construct( SERVER );
+		parent::__construct( new TinyRedisClient( SERVER ) );
 		$this->_define( 
 			array( 
 				'value', 
