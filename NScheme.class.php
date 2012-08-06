@@ -1,98 +1,127 @@
 <?php
 require_once ( 'TinyRedisClient.class.php' );
 
-class NSchemeBase
+class NSchemeBase implements ArrayAccess
 {
-	protected $_client, $_key, $_value;
+	private $_client;
+	private $_scheme;
+	private $_path;
 	
-	public function __construct( $client, $key, $value )
+	public function __construct( $client, array $scheme, array $path )
 	{
 		$this->_client = $client;
-		$this->_key = $key;
-		if ( is_array( $value ) )
+		$this->_scheme = array();
+		foreach ( $scheme as $key => $value )
 		{
-			$this->_value = new NSchemeStruct( $value, $this );
+			if ( is_string( $key ) )
+			{
+				$this->_scheme[ $key ] = $value;
+			}
+			else
+			{
+				$this->_scheme[ $value ] = 'value';
+			}
 		}
-		else
-		{
-			$this->_value = 'value';
-		}
-	}
-	
-	public function getKey()
-	{
-		return $this->_key;
-	}
-}
-
-class NSchemeStruct
-{
-	private $_fields, $_parent, $_value;
-	
-	public function __construct( array $value, $parent )
-	{
-		$this->_fields = $value;
-		$this->_parent = $parent;
-	}
-	
-	public function __set( $key, $value )
-	{
-		if ( !isset( $this->_fields[ $key ] ) )
-		{
-			throw new Exception( sprintf( 'Key "%s" not found', $key ) );
-		}
-		$this->_value[ $key ] = $value;
-		//return
+		$this->_path = $path;
 	}
 	
 	public function __get( $key )
 	{
-		if ( !isset( $this->_fields[ $key ] ) )
+		if ( !isset( $this->_scheme[ $key ] ) )
 		{
 			throw new Exception( sprintf( 'Key "%s" not found', $key ) );
 		}
-	}
-}
-
-class NSchemeValue extends NSchemeBase
-{
-	public function set( $value )
-	{
-		return $this->_client->set( $this->_key, $value );
-	}
-	
-	public function get()
-	{
-		if ( $this->_value != 'value' )
+		if ( is_array( $this->_scheme[ $key ] ) )
 		{
-			var_dump( 'ARRAY' );
-			return $this;
+			return new NSchemeBase( $this->_client, $this->_scheme[ $key ], array_merge( $this->_path, array( $key ) ) );
+		}
+		elseif ( $this->_scheme[ $key ] == 'hash' )
+		{
+			return new NSchemeBase( $this->_client, array(), array_merge( $this->_path, array( $key ) ) );
+		}
+		elseif ( $this->_scheme[ $key ] == 'set' )
+		{
+			return new NSchemeSet( $this->_client, array_merge( $this->_path, array( $key ) ) );
+		}
+		elseif ( $this->_scheme[ $key ] == 'queue' )
+		{
+			return new NSchemeQueue( $this->_client, array_merge( $this->_path, array( $key ) ) );
+		}
+		elseif ( $this->_scheme[ $key ] == 'stack' )
+		{
+			return new NSchemeStack( $this->_client, array_merge( $this->_path, array( $key ) ) );
 		}
 		else
 		{
-			return $this->_client->get( $this->_key );
+			$path = array_merge( $this->_path, array( $key ) );
+			return $this->_client->get( implode( ':', $path ) );
 		}
-	}
-	
-	public function del()
-	{
-		return $this->_client->del( $this->_key );
-	}
-	
-	public function __toString()
-	{
-		return $this->get();
 	}
 	
 	public function __set( $key, $value )
 	{
-		var_dump( 'SET' );
-		
+		if ( !isset( $this->_scheme[ $key ] ) )
+		{
+			throw new Exception( sprintf( 'Key "%s" not found', $key ) );
+		}
+		$path = array_merge( $this->_path, array( $key ) );
+		return $this->_client->set( implode( ':', $path ), $value );
+	}
+	
+	public function __isset( $key )
+	{
+		//return isset( $this->_list[ $key ] );
+	}
+	
+	public function __unset( $key )
+	{
+		/*if ( !isset( $this->_list[ $key ] ) )
+		{
+			throw new Exception( sprintf( 'Key "%s" not found', $key ) );
+		}
+		return $this->_list[ $key ]->del();*/
+	}
+	
+	public function offsetSet( $offset, $value )
+	{
+		//return $this->set( $offset, $value );
+		$path = array_merge( $this->_path, array( md5( $offset ) ) );
+		return $this->_client->set( implode( ':', $path ), $value );
+	
+	}
+	public function offsetExists( $offset )
+	{
+		//return $this->exists( $offset );
+	}
+	public function offsetUnset( $offset )
+	{
+		//return $this->set( $offset, null );
+	}
+	
+	public function offsetGet( $offset )
+	{
+		//return $this->get( $offset );
+		if ( empty( $this->_scheme ) )
+		{
+			$path = array_merge( $this->_path, array( md5( $offset ) ) );
+			return $this->_client->get( implode( ':', $path ) );
+		}
+		$path = array_merge( $this->_path, array( md5( $offset ) ) );
+		return new NSchemeBase( $this->_client, $this->_scheme, $path );
 	}
 }
 
-class NSchemeSet extends NSchemeBase
+class NSchemeSet
 {
+	private $_client, $_path, $_key;
+	
+	public function __construct( $client, array $path )
+	{
+		$this->_client = $client;
+		$this->_path = $path;
+		$this->_key = implode( ':', $path );
+	}
+	
 	public function add( $value )
 	{
 		return $this->_client->sadd( $this->_key, $value );
@@ -111,6 +140,15 @@ class NSchemeSet extends NSchemeBase
 
 class NSchemeQueue extends NSchemeBase
 {
+	private $_client, $_path, $_key;
+	
+	public function __construct( $client, array $path )
+	{
+		$this->_client = $client;
+		$this->_path = $path;
+		$this->_key = implode( ':', $path );
+	}
+	
 	public function push( $value )
 	{
 		return $this->_client->rpush( $this->_key, $value );
@@ -129,6 +167,15 @@ class NSchemeQueue extends NSchemeBase
 
 class NSchemeStack extends NSchemeBase
 {
+	private $_client, $_path, $_key;
+	
+	public function __construct( $client, array $path )
+	{
+		$this->_client = $client;
+		$this->_path = $path;
+		$this->_key = implode( ':', $path );
+	}
+	
 	public function push( $value )
 	{
 		return $this->_client->rpush( $this->_key, $value );
@@ -139,7 +186,7 @@ class NSchemeStack extends NSchemeBase
 		return $this->_client->rpop( $this->_key );
 	}
 }
-
+/*
 class NSchemeHash extends NSchemeBase implements ArrayAccess
 {
 	public function set( $key, $value )
@@ -173,26 +220,26 @@ class NSchemeHash extends NSchemeBase implements ArrayAccess
 	{
 		return $this->get( $offset );
 	}
-}
+}*/
 
-class NScheme
+class NScheme extends NSchemeBase
 {
-	private $_client, $_direct, $_types, $_list;
+	//private /*$_direct, $_types, $_list,*/ $_scheme;
 	
-	public function __construct( $server )
+
+	public function __construct()
 	{
-		$this->_client = new TinyRedisClient( $server );
-		$this->_direct = false;
-		$this->_types = array( 
-			'value' => 'NSchemeValue', 
+		//$this->_client = ;
+		//$this->_direct = false;
+		/*$this->_types = array( 
 			'set' => 'NSchemeSet', 
-			'hash' => 'NSchemeHash', 
 			'queue' => 'NSchemeQueue', 
-			'stack' => 'NSchemeStack' );
-		$this->_list = array();
+			'stack' => 'NSchemeStack' );*/
+		//$this->_list = array();
+			//$this->_scheme = array();
 	}
 	
-	protected function _allowDirectAccess( $flag )
+	/*protected function _allowDirectAccess( $flag )
 	{
 		$this->_direct = ( bool ) $flag;
 	}
@@ -203,51 +250,32 @@ class NScheme
 		{
 			return $this->_client;
 		}
-	}
+	}*/
 	
-	protected function _define( $key, $type = 'value', $value = 'value' )
+	protected function _define( array $scheme )
 	{
-		if ( !isset( $this->_types[ $type ] ) )
+		/*foreach ( $scheme as $key => $value )
 		{
-			throw new Exception( sprintf( 'Invalid data type "%s"', $type ) );
-		}
-		$this->_list[ $key ] = new $this->_types[ $type ]( $this->_client, $key, $value );
-	}
-	
-	public function __get( $key )
-	{
-		if ( !isset( $this->_list[ $key ] ) )
-		{
-			throw new Exception( sprintf( 'Key "%s" not found', $key ) );
-		}
-		if ( $this->_list[ $key ] instanceof NSchemeValue )
-		{
-			var_dump( 'GET' );
-			return $this->_list[ $key ]->get();
-		}
-		return $this->_list[ $key ];
-	}
-	
-	public function __set( $key, $value )
-	{
-		if ( !isset( $this->_list[ $key ] ) )
-		{
-			throw new Exception( sprintf( 'Key "%s" not found', $key ) );
-		}
-		return $this->_list[ $key ]->set( $value );
-	}
-	
-	public function __isset( $key )
-	{
-		return isset( $this->_list[ $key ] );
-	}
-	
-	public function __unset( $key )
-	{
-		if ( !isset( $this->_list[ $key ] ) )
-		{
-			throw new Exception( sprintf( 'Key "%s" not found', $key ) );
-		}
-		return $this->_list[ $key ]->del();
+			if ( is_array( $value ) )
+			{
+				foreach ( $value as $subkey => $subvalue )
+				{
+					if ( is_string( $subkey ) )
+					{
+						$this->_check( $subkey, $subvalue );
+					}
+				}
+			}
+			elseif ( is_string( $key ) )
+			{
+				throw new Exception( 'No data structures' );
+				/*if ( !isset( $this->_types[ $value ] ) )
+			{
+				throw new Exception( sprintf( 'Invalid data type "%s"', $value ) );
+			}
+			}
+		}*/
+		//$this->_scheme = $scheme;
+		parent::__construct( new TinyRedisClient( SERVER ), $scheme, array() );
 	}
 }
