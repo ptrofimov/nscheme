@@ -41,23 +41,24 @@ class NScheme_Structure_Base implements ArrayAccess
 		}
 		if ( is_array( $this->_scheme[ $key ] ) )
 		{
-			return new NSchemeBase( $this->_client, $this->_scheme[ $key ], array_merge( $this->_path, array( $key ) ) );
+			return new NScheme_Structure_Base( $this->_client, $this->_scheme[ $key ], array_merge( $this->_path, 
+				array( $key ) ) );
 		}
 		elseif ( $this->_scheme[ $key ] == 'hash' )
 		{
-			return new NSchemeBase( $this->_client, array(), array_merge( $this->_path, array( $key ) ) );
+			return new NScheme_Structure_Base( $this->_client, array(), array_merge( $this->_path, array( $key ) ) );
 		}
 		elseif ( $this->_scheme[ $key ] == 'set' )
 		{
-			return new NSchemeSet( $this->_client, array_merge( $this->_path, array( $key ) ) );
+			return new NScheme_Structure_Set( $this->_client, array_merge( $this->_path, array( $key ) ) );
 		}
 		elseif ( $this->_scheme[ $key ] == 'queue' )
 		{
-			return new NSchemeQueue( $this->_client, array_merge( $this->_path, array( $key ) ) );
+			return new NScheme_Structure_Queue( $this->_client, array_merge( $this->_path, array( $key ) ) );
 		}
 		elseif ( $this->_scheme[ $key ] == 'stack' )
 		{
-			return new NSchemeStack( $this->_client, array_merge( $this->_path, array( $key ) ) );
+			return new NScheme_Structure_Stack( $this->_client, array_merge( $this->_path, array( $key ) ) );
 		}
 		else
 		{
@@ -115,6 +116,6 @@ class NScheme_Structure_Base implements ArrayAccess
 			return $this->_client->get( implode( ':', $path ) );
 		}
 		$path = array_merge( $this->_path, array( md5( $offset ) ) );
-		return new NSchemeBase( $this->_client, $this->_scheme, $path );
+		return new NScheme_Structure_Base( $this->_client, $this->_scheme, $path );
 	}
 }

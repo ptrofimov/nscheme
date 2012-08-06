@@ -1,16 +1,7 @@
 <?php
 require_once ( 'config.php' );
-require_once ( 'NScheme.class.php' );
-
-/*$ts1 = microtime( true );
-$count = 1000000;
-for( $i = 0; $i < $count; $i++ )
-{
-	$hash = crc32( 'string' . $i );
-}
-$ts2 = microtime( true );
-var_dump( 1 / ( ( $ts2 - $ts1 ) / $count ) );
-exit();*/
+require_once ( 'TinyRedisClient.class.php' );
+require_once ( 'NScheme/NScheme.class.php' );
 
 class MyScheme extends NScheme
 {
@@ -25,11 +16,6 @@ class MyScheme extends NScheme
 				'set' => 'set', 
 				'stack' => 'stack', 
 				'queue' => 'queue' ) );
-		//$this->_define( 'some_set', 'set' );
-		//$this->_define( 'some_hash', 'hash' );
-		//$this->_define( 'some_queue', 'queue' );
-		//$this->_define( 'some_stack', 'stack' );
-		//$this->_define( 'level1', 'value', array( 'value' ) );
 	}
 }
 
@@ -55,25 +41,3 @@ var_dump( $my->queue->shift() );
 var_dump( $my->stack->push( 'stack_value' ) );
 var_dump( $my->stack->pop() );
 var_dump( $my->stack->push( 'stack_value' ) );
-
-
-//var_dump( $my->value[ 'key' ] = 1 );
-//var_dump( $my->value[ 'key' ] );
-
-/*var_dump( $my->some_value = 'value' );
-var_dump( $my->some_value );
-
-
-
-var_dump( $my->some_hash[ 'key' ] = 'value' );
-var_dump( isset( $my->some_hash[ 'key' ] ) );
-var_dump( $my->some_hash[ 'key' ] );
-
-
-
-var_dump( $my->level1->value = 'level1' );
-//var_dump( $my->value_of_stuct->value );*/
-
-// $my->value->key='value; value.key=value
-// $my->hash['sdf']->key=value hash243480980:key=value
-// $my->stack->push('sdf') stack:0=value stack:top++
