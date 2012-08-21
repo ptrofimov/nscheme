@@ -11,8 +11,40 @@ class NSchemeTest extends PHPUnit_Framework_TestCase
 	public function testValue()
 	{
 		$my = new MyScheme();
-		$my->value = 1;
-		$this->assertEquals( 1, $my->value );
+		$my->value = 'value1';
+		$this->assertSame( 'value1', $my->value );
+		$my->value = 'value2';
+		$this->assertSame( 'value2', $my->value );
+	}
+	
+	public function testStack()
+	{
+		$my = new MyScheme();
+		$my->stack->push( 'value1' );
+		$my->stack[] = 'value2'; // alt syntax
+		$this->assertSame( 'value2', $my->stack->pop() );
+		$this->assertSame( 'value1', $my->stack->pop() );
+		$this->assertSame( null, $my->stack->pop() );
+	}
+	
+	public function testQueue()
+	{
+		$my = new MyScheme();
+		$my->queue->push( 'value1' );
+		$my->queue->push( 'value2' );
+		$this->assertSame( false, $my->queue->isEmpty() );
+		$this->assertSame( 'value1', $my->queue->shift() );
+		$this->assertSame( 'value2', $my->queue->shift() );
+		$this->assertSame( null, $my->queue->shift() );
+		$this->assertSame( true, $my->queue->isEmpty() );
+	}
+	
+	public function testSet()
+	{
+		$my = new MyScheme();
+		$my->set->add( 'value' );
+		$this->assertEquals( 1, $my->set->exists( 'value' ) );
+		$this->assertEquals( array( 'value' ), $my->set->get() );
 	}
 	
 	public function testHash()
@@ -25,32 +57,9 @@ class NSchemeTest extends PHPUnit_Framework_TestCase
 	public function testStructure()
 	{
 		$my = new MyScheme();
-		$my->value2[ 'sdf' ]->value21 = 1;
-		$this->assertEquals( 1, $my->value2[ 'sdf' ]->value21 );
-		$my->value2->value21 = 1;
-		$this->assertEquals( 1, $my->value2->value21 );
-	}
-	
-	public function testSet()
-	{
-		$my = new MyScheme();
-		$my->set->add( 'value' );
-		$this->assertEquals( 1, $my->set->exists( 'value' ) );
-		$this->assertEquals( array( 'value' ), $my->set->get() );
-	}
-	
-	public function testQueue()
-	{
-		$my = new MyScheme();
-		$my->queue->push( 'value' );
-		$this->assertEquals( 0, $my->queue->isEmpty() );
-		$this->assertEquals( 'value', $my->queue->shift() );
-	}
-	
-	public function testStack()
-	{
-		$my = new MyScheme();
-		$my->stack->push( 'stack_value' );
-		$this->assertEquals( 'stack_value', $my->stack->pop() );
+		$my->struct[ 'sdf' ]->value = 1;
+		$this->assertEquals( 1, $my->struct[ 'sdf' ]->value );
+		$my->struct->value = 1;
+		$this->assertEquals( 1, $my->struct->value );
 	}
 }

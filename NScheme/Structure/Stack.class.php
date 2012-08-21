@@ -5,7 +5,7 @@
  * @link https://github.com/ptrofimov/nscheme
  * @author Petr Trofimov
  */
-class NScheme_Structure_Stack
+class NScheme_Structure_Stack implements ArrayAccess
 {
 	private $_client, $_path, $_key;
 	
@@ -24,5 +24,29 @@ class NScheme_Structure_Stack
 	public function pop()
 	{
 		return $this->_client->rpop( $this->_key );
+	}
+	
+	public function offsetSet( $offset, $value )
+	{
+		if ( !is_null( $offset ) )
+		{
+			throw new NScheme_Exception( 'No random access in stack' );
+		}
+		$this->push( $value );
+	}
+	
+	public function offsetExists( $offset )
+	{
+		throw new NScheme_Exception( 'No random access in stack' );
+	}
+	
+	public function offsetUnset( $offset )
+	{
+		throw new NScheme_Exception( 'No random access in stack' );
+	}
+	
+	public function offsetGet( $offset )
+	{
+		throw new NScheme_Exception( 'No random access in stack' );
 	}
 }

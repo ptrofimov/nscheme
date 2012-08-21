@@ -10,10 +10,10 @@ class MyScheme extends NScheme
 		$this->_define( 
 			array( 
 				'value', 
-				'value2' => array( 'value21' ), 
-				'hash' => 'hash', 
-				'set' => 'set', 
 				'stack' => 'stack', 
-				'queue' => 'queue' ) );
+				'queue' => 'queue', 
+				'set' => 'set', 
+				'hash' => 'hash', 
+				'struct' => array( 'value' ) ) );
 	}
 }
