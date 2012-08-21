@@ -11,8 +11,10 @@ class NSchemeTest extends PHPUnit_Framework_TestCase
 	public function testValue()
 	{
 		$my = new MyScheme();
+		
 		$my->value = 'value1';
 		$this->assertSame( 'value1', $my->value );
+		
 		$my->value = 'value2';
 		$this->assertSame( 'value2', $my->value );
 	}
@@ -20,18 +22,42 @@ class NSchemeTest extends PHPUnit_Framework_TestCase
 	public function testStack()
 	{
 		$my = new MyScheme();
+		
 		$my->stack->push( 'value1' );
-		$my->stack[] = 'value2'; // alt syntax
+		$my->stack->push( 'value2' );
+		
 		$this->assertSame( 'value2', $my->stack->pop() );
 		$this->assertSame( 'value1', $my->stack->pop() );
 		$this->assertSame( null, $my->stack->pop() );
 	}
 	
+	public function testStackAltSyntax()
+	{
+		$my = new MyScheme();
+		
+		$my->stack[] = 'value1';
+		$my->stack[] = 'value2';
+		
+		$values = array();
+		foreach ( $my->stack as $value )
+		{
+			$values[] = $value;
+			if ( $value == 'value1' )
+			{
+				$my->stack[] = 'value3';
+			}
+		}
+		
+		$this->assertSame( array( 'value2', 'value1', 'value3' ), $values );
+	}
+	
 	public function testQueue()
 	{
 		$my = new MyScheme();
+		
 		$my->queue->push( 'value1' );
 		$my->queue->push( 'value2' );
+		
 		$this->assertSame( false, $my->queue->isEmpty() );
 		$this->assertSame( 'value1', $my->queue->shift() );
 		$this->assertSame( 'value2', $my->queue->shift() );
