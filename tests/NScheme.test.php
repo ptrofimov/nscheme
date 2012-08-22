@@ -98,14 +98,48 @@ class NSchemeTest extends PHPUnit_Framework_TestCase
 	{
 		$my = new MyScheme();
 		
-		$my->queue->push( 'value1' );
-		$my->queue->push( 'value2' );
+		$retval = $my->queue->clear();
 		
-		$this->assertSame( false, $my->queue->isEmpty() );
-		$this->assertSame( 'value1', $my->queue->shift() );
-		$this->assertSame( 'value2', $my->queue->shift() );
-		$this->assertSame( null, $my->queue->shift() );
+		$this->assertSame( $my->queue, $retval );
 		$this->assertSame( true, $my->queue->isEmpty() );
+		$this->assertSame( 0, $my->queue->getCount() );
+		$this->assertSame( null, $my->queue->shift() );
+		$this->assertSame( null, $my->queue->peek() );
+		
+		$retval = $my->queue->push( 'value1' );
+		
+		$this->assertSame( $my->queue, $retval );
+		$this->assertSame( false, $my->queue->isEmpty() );
+		$this->assertSame( 1, $my->queue->getCount() );
+		$this->assertSame( 'value1', $my->queue->peek() );
+		
+		$retval = $my->queue->push( 'value2' );
+		
+		$this->assertSame( $my->queue, $retval );
+		$this->assertSame( false, $my->queue->isEmpty() );
+		$this->assertSame( 2, $my->queue->getCount() );
+		$this->assertSame( 'value1', $my->queue->peek() );
+		
+		$retval = $my->queue->shift();
+		
+		$this->assertSame( 'value1', $retval );
+		$this->assertSame( false, $my->queue->isEmpty() );
+		$this->assertSame( 1, $my->queue->getCount() );
+		$this->assertSame( 'value2', $my->queue->peek() );
+		
+		$retval = $my->queue->shift();
+		
+		$this->assertSame( 'value2', $retval );
+		$this->assertSame( true, $my->queue->isEmpty() );
+		$this->assertSame( 0, $my->queue->getCount() );
+		$this->assertSame( null, $my->queue->peek() );
+		
+		$retval = $my->queue->shift();
+		
+		$this->assertSame( null, $retval );
+		$this->assertSame( true, $my->queue->isEmpty() );
+		$this->assertSame( 0, $my->queue->getCount() );
+		$this->assertSame( null, $my->queue->peek() );
 	}
 	
 	public function testSet()
