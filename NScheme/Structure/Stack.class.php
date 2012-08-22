@@ -7,9 +7,8 @@
  */
 class NScheme_Structure_Stack implements ArrayAccess, Iterator, Countable
 {
-	private $_client, $_path, $_key; //, $_value, $_loaded, $_end;
+	private $_client, $_path, $_key, $_value, $_end;
 	
-
 	public function __construct( $client, array $path )
 	{
 		$this->_client = $client;
@@ -92,8 +91,7 @@ class NScheme_Structure_Stack implements ArrayAccess, Iterator, Countable
 	 */
 	public function rewind()
 	{
-		//$this->_loaded = false;
-		var_dump( __METHOD__ );
+		$this->next();
 	}
 	
 	/**
@@ -101,15 +99,7 @@ class NScheme_Structure_Stack implements ArrayAccess, Iterator, Countable
 	 */
 	public function current()
 	{
-		/*if ( !$this->_loaded )
-		{
-			$this->_value = $this->pop();
-			$this->_end = is_null( $this->_value );
-			$this->_loaded = true;
-		}
-		return $this->_value;*/
-		var_dump( __METHOD__ );
-		return $this->peek();
+		return $this->_value;
 	}
 	
 	/**
@@ -117,7 +107,6 @@ class NScheme_Structure_Stack implements ArrayAccess, Iterator, Countable
 	 */
 	public function key()
 	{
-		var_dump( __METHOD__ );
 		return null;
 	}
 	
@@ -126,13 +115,8 @@ class NScheme_Structure_Stack implements ArrayAccess, Iterator, Countable
 	 */
 	public function next()
 	{
-		/*$this->_value = $this->pop();
-		$this->_end = is_null( $this->_value );
-		$this->_loaded = true;
-		return $this->_value;*/
-		var_dump( __METHOD__ );
-		$this->pop();
-		return $this->peek();
+		$this->_end = $this->isEmpty();
+		$this->_value = $this->_end ? null : $this->pop();
 	}
 	
 	/**
@@ -140,15 +124,7 @@ class NScheme_Structure_Stack implements ArrayAccess, Iterator, Countable
 	 */
 	public function valid()
 	{
-		/*if ( !$this->_loaded )
-		{
-			$this->_value = $this->pop();
-			$this->_end = is_null( $this->_value );
-			$this->_loaded = true;
-		}
-		return !$this->_end;*/
-		var_dump( __METHOD__ );
-		return !$this->isEmpty();
+		return !$this->_end;
 	}
 	
 	/**
