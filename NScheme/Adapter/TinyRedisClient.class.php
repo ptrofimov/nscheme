@@ -51,4 +51,14 @@ class NScheme_Adapter_TinyRedisClient extends NScheme_Adapter
 	{
 		return $this->_client->rpop( $key );
 	}
+	
+	public function del( $key )
+	{
+		return $this->_client->del( $key );
+	}
+	
+	public function lrange( $key, $start, $stop )
+	{
+		return $this->_client->lrange( $key, $start, $stop );
+	}
 }

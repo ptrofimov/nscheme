@@ -71,8 +71,14 @@ class NSchemeTest extends PHPUnit_Framework_TestCase
 	{
 		$my = new MyScheme();
 		
+		$my->stack->clear();
+		
+		$this->assertSame( 0, count( $my->stack ) );
+		
 		$my->stack[] = 'value1';
 		$my->stack[] = 'value2';
+		
+		$this->assertSame( 2, count( $my->stack ) );
 		
 		$values = array();
 		foreach ( $my->stack as $value )
@@ -85,6 +91,7 @@ class NSchemeTest extends PHPUnit_Framework_TestCase
 		}
 		
 		$this->assertSame( array( 'value2', 'value1', 'value3' ), $values );
+		$this->assertSame( 0, count( $my->stack ) );
 	}
 	
 	public function testQueue()

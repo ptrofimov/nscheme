@@ -5,10 +5,11 @@
  * @link https://github.com/ptrofimov/nscheme
  * @author Petr Trofimov
  */
-class NScheme_Structure_Stack implements ArrayAccess, Iterator
+class NScheme_Structure_Stack implements ArrayAccess, Iterator, Countable
 {
-	private $_client, $_path, $_key, $_value, $_loaded, $_end;
+	private $_client, $_path, $_key; //, $_value, $_loaded, $_end;
 	
+
 	public function __construct( $client, array $path )
 	{
 		$this->_client = $client;
@@ -19,6 +20,7 @@ class NScheme_Structure_Stack implements ArrayAccess, Iterator
 	
 	public function clear()
 	{
+		$this->_client->del( $this->_key );
 		return $this;
 	}
 	
@@ -28,6 +30,12 @@ class NScheme_Structure_Stack implements ArrayAccess, Iterator
 		return $this;
 	}
 	
+	public function peek()
+	{
+		$list = $this->_client->lrange( $this->_key, -1, 1 );
+		return !empty( $list ) ? reset( $list ) : null;
+	}
+	
 	public function pop()
 	{
 		return $this->_client->rpop( $this->_key );
@@ -35,10 +43,12 @@ class NScheme_Structure_Stack implements ArrayAccess, Iterator
 	
 	public function isEmpty()
 	{
+		return $this->getCount() == 0;
 	}
 	
 	public function getCount()
 	{
+		return ( int ) $this->_client->llen( $this->_key );
 	}
 	
 	/**
@@ -82,7 +92,8 @@ class NScheme_Structure_Stack implements ArrayAccess, Iterator
 	 */
 	public function rewind()
 	{
-		$this->_loaded = false;
+		//$this->_loaded = false;
+		var_dump( __METHOD__ );
 	}
 	
 	/**
@@ -90,13 +101,15 @@ class NScheme_Structure_Stack implements ArrayAccess, Iterator
 	 */
 	public function current()
 	{
-		if ( !$this->_loaded )
+		/*if ( !$this->_loaded )
 		{
 			$this->_value = $this->pop();
 			$this->_end = is_null( $this->_value );
 			$this->_loaded = true;
 		}
-		return $this->_value;
+		return $this->_value;*/
+		var_dump( __METHOD__ );
+		return $this->peek();
 	}
 	
 	/**
@@ -104,6 +117,7 @@ class NScheme_Structure_Stack implements ArrayAccess, Iterator
 	 */
 	public function key()
 	{
+		var_dump( __METHOD__ );
 		return null;
 	}
 	
@@ -112,10 +126,13 @@ class NScheme_Structure_Stack implements ArrayAccess, Iterator
 	 */
 	public function next()
 	{
-		$this->_value = $this->pop();
+		/*$this->_value = $this->pop();
 		$this->_end = is_null( $this->_value );
 		$this->_loaded = true;
-		return $this->_value;
+		return $this->_value;*/
+		var_dump( __METHOD__ );
+		$this->pop();
+		return $this->peek();
 	}
 	
 	/**
@@ -123,12 +140,22 @@ class NScheme_Structure_Stack implements ArrayAccess, Iterator
 	 */
 	public function valid()
 	{
-		if ( !$this->_loaded )
+		/*if ( !$this->_loaded )
 		{
 			$this->_value = $this->pop();
 			$this->_end = is_null( $this->_value );
 			$this->_loaded = true;
 		}
-		return !$this->_end;
+		return !$this->_end;*/
+		var_dump( __METHOD__ );
+		return !$this->isEmpty();
+	}
+	
+	/**
+	 * Implementation of Countable methods
+	 */
+	public function count()
+	{
+		return $this->getCount();
 	}
 }
