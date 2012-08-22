@@ -23,12 +23,48 @@ class NSchemeTest extends PHPUnit_Framework_TestCase
 	{
 		$my = new MyScheme();
 		
-		$my->stack->push( 'value1' );
-		$my->stack->push( 'value2' );
+		$retval = $my->stack->clear();
 		
-		$this->assertSame( 'value2', $my->stack->pop() );
-		$this->assertSame( 'value1', $my->stack->pop() );
+		$this->assertSame( $my->stack, $retval );
+		$this->assertSame( true, $my->stack->isEmpty() );
+		$this->assertSame( 0, $my->stack->getCount() );
 		$this->assertSame( null, $my->stack->pop() );
+		$this->assertSame( null, $my->stack->peek() );
+		
+		$retval = $my->stack->push( 'value1' );
+		
+		$this->assertSame( $my->stack, $retval );
+		$this->assertSame( false, $my->stack->isEmpty() );
+		$this->assertSame( 1, $my->stack->getCount() );
+		$this->assertSame( 'value1', $my->stack->peek() );
+		
+		$retval = $my->stack->push( 'value2' );
+		
+		$this->assertSame( $my->stack, $retval );
+		$this->assertSame( false, $my->stack->isEmpty() );
+		$this->assertSame( 2, $my->stack->getCount() );
+		$this->assertSame( 'value2', $my->stack->peek() );
+		
+		$retval = $my->stack->pop();
+		
+		$this->assertSame( 'value2', $retval );
+		$this->assertSame( false, $my->stack->isEmpty() );
+		$this->assertSame( 1, $my->stack->getCount() );
+		$this->assertSame( 'value1', $my->stack->peek() );
+		
+		$retval = $my->stack->pop();
+		
+		$this->assertSame( 'value1', $retval );
+		$this->assertSame( true, $my->stack->isEmpty() );
+		$this->assertSame( 0, $my->stack->getCount() );
+		$this->assertSame( null, $my->stack->peek() );
+		
+		$retval = $my->stack->pop();
+		
+		$this->assertSame( null, $retval );
+		$this->assertSame( true, $my->stack->isEmpty() );
+		$this->assertSame( 0, $my->stack->getCount() );
+		$this->assertSame( null, $my->stack->peek() );
 	}
 	
 	public function testStackAltSyntax()

@@ -17,14 +17,28 @@ class NScheme_Structure_Stack implements ArrayAccess, Iterator
 		$this->_loaded = false;
 	}
 	
+	public function clear()
+	{
+		return $this;
+	}
+	
 	public function push( $value )
 	{
-		return $this->_client->rpush( $this->_key, $value );
+		$this->_client->rpush( $this->_key, $value );
+		return $this;
 	}
 	
 	public function pop()
 	{
 		return $this->_client->rpop( $this->_key );
+	}
+	
+	public function isEmpty()
+	{
+	}
+	
+	public function getCount()
+	{
 	}
 	
 	/**

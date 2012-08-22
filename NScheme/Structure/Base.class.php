@@ -15,6 +15,11 @@ class NScheme_Structure_Base implements ArrayAccess
 	private $_scheme;
 	private $_path;
 	
+	/**
+	 * @var array
+	 */
+	private $_instances;
+	
 	public function __construct( $client, array $scheme, array $path )
 	{
 		$this->_client = $client;
@@ -31,6 +36,7 @@ class NScheme_Structure_Base implements ArrayAccess
 			}
 		}
 		$this->_path = $path;
+		$this->_instances = array();
 	}
 	
 	public function __get( $key )
@@ -58,7 +64,12 @@ class NScheme_Structure_Base implements ArrayAccess
 		}
 		elseif ( $this->_scheme[ $key ] == 'stack' )
 		{
-			return new NScheme_Structure_Stack( $this->_client, array_merge( $this->_path, array( $key ) ) );
+			if ( !isset( $this->_instances[ $key ] ) )
+			{
+				$this->_instances[ $key ] = new NScheme_Structure_Stack( $this->_client, array_merge( $this->_path, 
+					array( $key ) ) );
+			}
+			return $this->_instances[ $key ];
 		}
 		else
 		{
