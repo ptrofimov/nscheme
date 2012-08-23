@@ -172,9 +172,46 @@ class NSchemeTest extends PHPUnit_Framework_TestCase
 	public function testSet()
 	{
 		$my = new MyScheme();
-		$my->set->add( 'value' );
-		$this->assertEquals( 1, $my->set->exists( 'value' ) );
-		$this->assertEquals( array( 'value' ), $my->set->get() );
+		
+		$retval = $my->set->clear();
+		
+		$this->assertSame( $my->set, $retval );
+		$this->assertSame( true, $my->set->isEmpty() );
+		$this->assertSame( 0, $my->set->getCount() );
+		$this->assertSame( false, $my->set->exists( 'value1' ) );
+		$this->assertSame( false, $my->set->exists( 'value2' ) );
+		
+		$retval = $my->set->add( 'value1' );
+		
+		$this->assertSame( $my->set, $retval );
+		$this->assertSame( false, $my->set->isEmpty() );
+		$this->assertSame( 1, $my->set->getCount() );
+		$this->assertSame( true, $my->set->exists( 'value1' ) );
+		$this->assertSame( false, $my->set->exists( 'value2' ) );
+		
+		$retval = $my->set->add( 'value2' );
+		
+		$this->assertSame( $my->set, $retval );
+		$this->assertSame( false, $my->set->isEmpty() );
+		$this->assertSame( 2, $my->set->getCount() );
+		$this->assertSame( true, $my->set->exists( 'value1' ) );
+		$this->assertSame( true, $my->set->exists( 'value2' ) );
+		
+		$retval = $my->set->del( 'value1' );
+		
+		$this->assertSame( $my->set, $retval );
+		$this->assertSame( false, $my->set->isEmpty() );
+		$this->assertSame( 1, $my->set->getCount() );
+		$this->assertSame( false, $my->set->exists( 'value1' ) );
+		$this->assertSame( true, $my->set->exists( 'value2' ) );
+		
+		$retval = $my->set->del( 'value2' );
+		
+		$this->assertSame( $my->set, $retval );
+		$this->assertSame( true, $my->set->isEmpty() );
+		$this->assertSame( 0, $my->set->getCount() );
+		$this->assertSame( false, $my->set->exists( 'value1' ) );
+		$this->assertSame( false, $my->set->exists( 'value2' ) );
 	}
 	
 	public function testHash()
