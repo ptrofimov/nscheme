@@ -142,6 +142,33 @@ class NSchemeTest extends PHPUnit_Framework_TestCase
 		$this->assertSame( null, $my->queue->peek() );
 	}
 	
+	public function testQueueAltSyntax()
+	{
+		$my = new MyScheme();
+		
+		$my->queue->clear();
+		
+		$this->assertSame( 0, count( $my->queue ) );
+		
+		$my->queue[] = 'value1';
+		$my->queue[] = 'value2';
+		
+		$this->assertSame( 2, count( $my->queue ) );
+		
+		$values = array();
+		foreach ( $my->queue as $value )
+		{
+			$values[] = $value;
+			if ( $value == 'value1' )
+			{
+				$my->queue[] = 'value3';
+			}
+		}
+		
+		$this->assertSame( array( 'value1', 'value2', 'value3' ), $values );
+		$this->assertSame( 0, count( $my->queue ) );
+	}
+	
 	public function testSet()
 	{
 		$my = new MyScheme();
