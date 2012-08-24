@@ -16,18 +16,36 @@ class NScheme_Structure_Set
 		$this->_key = implode( ':', $path );
 	}
 	
+	public function clear()
+	{
+		$this->_client->del( $this->_key );
+		return $this;
+	}
+	
 	public function add( $value )
 	{
-		return $this->_client->sadd( $this->_key, $value );
+		$this->_client->sadd( $this->_key, $value );
+		return $this;
+	}
+	
+	public function del( $value )
+	{
+		$this->_client->srem( $this->_key, $value );
+		return $this;
 	}
 	
 	public function exists( $value )
 	{
-		return $this->_client->sismember( $this->_key, $value );
+		return ( bool ) $this->_client->sismember( $this->_key, $value );
 	}
 	
-	public function get()
+	public function isEmpty()
 	{
-		return $this->_client->smembers( $this->_key );
+		return $this->getCount() == 0;
+	}
+	
+	public function getCount()
+	{
+		return ( int ) $this->_client->scard( $this->_key );
 	}
 }

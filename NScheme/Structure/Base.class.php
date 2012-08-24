@@ -56,7 +56,12 @@ class NScheme_Structure_Base implements ArrayAccess
 		}
 		elseif ( $this->_scheme[ $key ] == 'set' )
 		{
-			return new NScheme_Structure_Set( $this->_client, array_merge( $this->_path, array( $key ) ) );
+			if ( !isset( $this->_instances[ $key ] ) )
+			{
+				$this->_instances[ $key ] = new NScheme_Structure_Set( $this->_client, array_merge( $this->_path, 
+					array( $key ) ) );
+			}
+			return $this->_instances[ $key ];
 		}
 		elseif ( $this->_scheme[ $key ] == 'queue' )
 		{

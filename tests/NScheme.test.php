@@ -197,6 +197,14 @@ class NSchemeTest extends PHPUnit_Framework_TestCase
 		$this->assertSame( true, $my->set->exists( 'value1' ) );
 		$this->assertSame( true, $my->set->exists( 'value2' ) );
 		
+		$retval = $my->set->add( 'value2' ); /* uniq test */
+		
+		$this->assertSame( $my->set, $retval );
+		$this->assertSame( false, $my->set->isEmpty() );
+		$this->assertSame( 2, $my->set->getCount() );
+		$this->assertSame( true, $my->set->exists( 'value1' ) );
+		$this->assertSame( true, $my->set->exists( 'value2' ) );
+		
 		$retval = $my->set->del( 'value1' );
 		
 		$this->assertSame( $my->set, $retval );
@@ -212,6 +220,33 @@ class NSchemeTest extends PHPUnit_Framework_TestCase
 		$this->assertSame( 0, $my->set->getCount() );
 		$this->assertSame( false, $my->set->exists( 'value1' ) );
 		$this->assertSame( false, $my->set->exists( 'value2' ) );
+	}
+	
+	public function testSetAltSyntax()
+	{
+		$my = new MyScheme();
+		
+		$my->set->clear();
+		
+		$this->assertSame( 0, count( $my->set ) );
+		
+		$my->set[] = 'value1';
+		$my->set[] = 'value2';
+		
+		$this->assertSame( 2, count( $my->set ) );
+		
+		$values = array();
+		foreach ( $my->set as $value )
+		{
+			$values[] = $value;
+			if ( $value == 'value1' )
+			{
+				$my->set[] = 'value3';
+			}
+		}
+		
+		$this->assertEqual( array( 'value1', 'value2', 'value3' ), $values );
+		$this->assertSame( 3, count( $my->set ) );
 	}
 	
 	public function testHash()

@@ -61,4 +61,14 @@ class NScheme_Adapter_TinyRedisClient extends NScheme_Adapter
 	{
 		return $this->_client->lrange( $key, $start, $stop );
 	}
+	
+	public function scard( $key )
+	{
+		return $this->_client->scard( $key );
+	}
+	
+	public function srem( $key, $value )
+	{
+		return $this->_client->srem( $key, $value );
+	}
 }
