@@ -52,7 +52,12 @@ class NScheme_Structure_Base implements ArrayAccess
 		}
 		elseif ( $this->_scheme[ $key ] == 'hash' )
 		{
-			return new NScheme_Structure_Base( $this->_client, array(), array_merge( $this->_path, array( $key ) ) );
+			if ( !isset( $this->_instances[ $key ] ) )
+			{
+				$this->_instances[ $key ] = new NScheme_Structure_Base( $this->_client, array(), array_merge( $this->_path, 
+					array( $key ) ) );
+			}
+			return $this->_instances[ $key ];
 		}
 		elseif ( $this->_scheme[ $key ] == 'set' )
 		{
@@ -138,5 +143,28 @@ class NScheme_Structure_Base implements ArrayAccess
 		}
 		$path = array_merge( $this->_path, array( md5( $offset ) ) );
 		return new NScheme_Structure_Base( $this->_client, $this->_scheme, $path );
+	}
+	
+	public function set( $key, $value )
+	{
+		$this->offsetSet( $key, $value );
+		return $this;
+	}
+	
+	public function get( $key )
+	{
+		return $this->offsetGet( $key );
+	}
+	
+	public function exists( $key )
+	{
+		return $this->get( $key ) !== null;
+	}
+	
+	public function del( $key )
+	{
+		$path = array_merge( $this->_path, array( md5( $key ) ) );
+		$this->_client->del( implode( ':', $path ) );
+		return $this;
 	}
 }
