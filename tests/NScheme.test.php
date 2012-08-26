@@ -235,18 +235,24 @@ class NSchemeTest extends PHPUnit_Framework_TestCase
 		
 		$this->assertSame( 2, count( $my->set ) );
 		
+		$this->assertSame( true, isset( $my->set[ 'value1' ] ) );
+		
 		$values = array();
 		foreach ( $my->set as $value )
 		{
 			$values[] = $value;
-			if ( $value == 'value1' )
-			{
-				$my->set[] = 'value3';
-			}
 		}
 		
-		$this->assertEqual( array( 'value1', 'value2', 'value3' ), $values );
-		$this->assertSame( 3, count( $my->set ) );
+		sort( $values );
+		
+		$this->assertSame( array( 'value1', 'value2' ), $values );
+		$this->assertSame( 2, count( $my->set ) );
+		
+		$this->assertSame( true, isset( $my->set[ 'value1' ] ) );
+		
+		unset( $my->set[ 'value1' ] );
+		
+		$this->assertSame( false, isset( $my->set[ 'value1' ] ) );
 	}
 	
 	public function testHash()
