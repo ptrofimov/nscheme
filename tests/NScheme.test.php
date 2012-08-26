@@ -273,6 +273,21 @@ class NSchemeTest extends PHPUnit_Framework_TestCase
 		$this->assertSame( null, $my->hash->get( 'key1' ) );
 	}
 	
+	public function testHashAltSyntax()
+	{
+		$my = new MyScheme();
+		
+		$my->hash[ 'key1' ] = 'value1';
+		
+		$this->assertSame( true, isset( $my->hash[ 'key1' ] ) );
+		$this->assertSame( 'value1', $my->hash[ 'key1' ] );
+		
+		unset( $my->hash[ 'key1' ] );
+		
+		$this->assertSame( false, isset( $my->hash[ 'key1' ] ) );
+		$this->assertSame( null, $my->hash[ 'key1' ] );
+	}
+	
 	public function testStructure()
 	{
 		$my = new MyScheme();

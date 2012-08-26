@@ -105,16 +105,12 @@ class NScheme_Structure_Base implements ArrayAccess
 	
 	public function __isset( $key )
 	{
-		//return isset( $this->_list[ $key ] );
+		//return $this->exists( $key );
 	}
 	
 	public function __unset( $key )
 	{
-		/*if ( !isset( $this->_list[ $key ] ) )
-		 {
-		throw new Exception( sprintf( 'Key "%s" not found', $key ) );
-		}
-		return $this->_list[ $key ]->del();*/
+		//return $this->del( $key );
 	}
 	
 	public function offsetSet( $offset, $value )
@@ -126,10 +122,12 @@ class NScheme_Structure_Base implements ArrayAccess
 	}
 	public function offsetExists( $offset )
 	{
+		return $this->exists( $offset );
 		//return $this->exists( $offset );
 	}
 	public function offsetUnset( $offset )
 	{
+		return $this->del( $offset );
 		//return $this->set( $offset, null );
 	}
 	
