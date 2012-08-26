@@ -14,6 +14,6 @@ class MyScheme extends NScheme
 				'queue' => 'queue', 
 				'set' => 'set', 
 				'hash' => 'hash', 
-				'struct' => array( 'value' ) ) );
+				'struct' => array( 'value', 'stack' => 'stack' ) ) );
 	}
 }
