@@ -27,6 +27,11 @@ class NScheme extends NScheme_Structure_Base
 			require_once ( 'Adapter/TinyRedisClient.class.php' );
 			$this->_client = new NScheme_Adapter_TinyRedisClient( $client );
 		}
+		elseif ( get_class( $client ) == 'Rediska' )
+		{
+			require_once ( 'Adapter/Rediska.class.php' );
+			$this->_client = new NScheme_Adapter_Rediska( $client );
+		}
 		else
 		{
 			throw new NScheme_Exception( sprintf( 'Unknown NoSQL client "%s"', get_class( $client ) ) );

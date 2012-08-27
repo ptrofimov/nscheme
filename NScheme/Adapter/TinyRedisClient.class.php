@@ -7,6 +7,18 @@
  */
 class NScheme_Adapter_TinyRedisClient extends NScheme_Adapter
 {
+	public function valueSet( $key, $value )
+	{
+		return $this->_client->set( $key, $value );
+	}
+	
+	public function valueGet( $key )
+	{
+		return $this->_client->get( $key );
+	}
+	
+	/*  old methods*/
+	
 	public function set( $key, $value )
 	{
 		return $this->_client->set( $key, $value );

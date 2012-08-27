@@ -6,13 +6,26 @@ require_once ( dirname( __FILE__ ) . '/../NScheme/NScheme.class.php' );
 require_once ( 'include/TinyRedisClient.class.php' );
 require_once ( 'include/MyScheme.class.php' );
 
-class ValueTest extends PHPUnit_Framework_TestCase
+class StackTest extends PHPUnit_Framework_TestCase
 {
+	public function dataProvider()
+	{
+		$scheme = new MyScheme();
+		
+		$data = array();
+		$data[] = array( $scheme, 'stack' );
+		$data[] = array( $scheme->struct, 'stack' );
+		$data[] = array( $scheme->struct[ 'key' ], 'stack' );
+		return $data;
+	}
+	
 	/**
 	 * @dataProvider dataProvider
 	 */
 	public function testMain( NScheme_Structure_Base $base, $key )
 	{
+		$this->assertSame( 'NScheme_Structure_Stack', get_class( $base->{$key} ) );
+		
 		$retval = $base->{$key}->clear();
 		
 		$this->assertSame( $base->{$key}, $retval );
@@ -57,13 +70,31 @@ class ValueTest extends PHPUnit_Framework_TestCase
 		$this->assertSame( null, $base->{$key}->peek() );
 	}
 	
-	public function dataProvider()
+	/**
+	 * @dataProvider dataProvider
+	 */
+	public function testAltSyntax( NScheme_Structure_Base $base, $key )
 	{
-		$scheme = new MyScheme();
+		$base->{$key}->clear();
 		
-		$data = array();
-		$data[] = array( $scheme, 'stack' );
-		$data[] = array( $scheme->struct, 'value' );
-		return $data;
+		$this->assertSame( 0, count( $base->{$key} ) );
+		
+		$base->{$key}[] = 'value1';
+		$base->{$key}[] = 'value2';
+		
+		$this->assertSame( 2, count( $base->{$key} ) );
+		
+		$values = array();
+		foreach ( $base->{$key} as $value )
+		{
+			$values[] = $value;
+			if ( $value == 'value1' )
+			{
+				$base->{$key}[] = 'value3';
+			}
+		}
+		
+		$this->assertSame( array( 'value2', 'value1', 'value3' ), $values );
+		$this->assertSame( 0, count( $base->{$key} ) );
 	}
 }

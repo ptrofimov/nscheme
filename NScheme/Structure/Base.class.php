@@ -89,7 +89,7 @@ class NScheme_Structure_Base implements ArrayAccess
 		else
 		{
 			$path = array_merge( $this->_path, array( $key ) );
-			return $this->_client->get( implode( ':', $path ) );
+			return $this->_client->valueGet( implode( ':', $path ) );
 		}
 	}
 	
@@ -100,7 +100,7 @@ class NScheme_Structure_Base implements ArrayAccess
 			throw new Exception( sprintf( 'Key "%s" not found', $key ) );
 		}
 		$path = array_merge( $this->_path, array( $key ) );
-		return $this->_client->set( implode( ':', $path ), $value );
+		return $this->_client->valueSet( implode( ':', $path ), $value );
 	}
 	
 	public function __isset( $key )
