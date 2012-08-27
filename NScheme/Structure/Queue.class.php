@@ -19,20 +19,19 @@ class NScheme_Structure_Queue implements ArrayAccess, Iterator, Countable
 	
 	public function clear()
 	{
-		$this->_client->del( $this->_key );
+		$this->_client->queueClear( $this->_key );
 		return $this;
 	}
 	
 	public function push( $value )
 	{
-		$this->_client->rpush( $this->_key, $value );
+		$this->_client->queuePush( $this->_key, $value );
 		return $this;
 	}
 	
 	public function peek()
 	{
-		$list = $this->_client->lrange( $this->_key, 0, 1 );
-		return !empty( $list ) ? reset( $list ) : null;
+		return $this->_client->queuePeek( $this->_key );
 	}
 	
 	public function isEmpty()
@@ -42,12 +41,12 @@ class NScheme_Structure_Queue implements ArrayAccess, Iterator, Countable
 	
 	public function shift()
 	{
-		return $this->_client->lpop( $this->_key );
+		return $this->_client->queueShift( $this->_key );
 	}
 	
 	public function getCount()
 	{
-		return ( int ) $this->_client->llen( $this->_key );
+		return ( int ) $this->_client->queueGetCount( $this->_key );
 	}
 	
 	/**

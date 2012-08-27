@@ -43,6 +43,32 @@ class NScheme_Adapter_TinyRedisClient extends NScheme_Adapter
 		return ( int ) $this->_client->llen( $key );
 	}
 	
+	public function queueClear( $key )
+	{
+		return $this->_client->del( $key );
+	}
+	
+	public function queueGetCount( $key )
+	{
+		return ( int ) $this->_client->llen( $key );
+	}
+	
+	public function queueShift( $key )
+	{
+		return $this->_client->lpop( $key );
+	}
+	
+	public function queuePeek( $key )
+	{
+		$list = $this->_client->lrange( $key, 0, 1 );
+		return !empty( $list ) ? reset( $list ) : null;
+	}
+	
+	public function queuePush( $key, $value )
+	{
+		return $this->_client->rpush( $key, $value );
+	}
+	
 	/*  old methods*/
 	
 	public function sadd( $key, $value )

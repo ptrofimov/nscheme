@@ -2,20 +2,20 @@
 /**
  * @author Petr Trofimov
  */
-require_once ( dirname( __FILE__ ) . '/../NScheme/NScheme.class.php' );
-require_once ( 'include/TinyRedisClient.class.php' );
-require_once ( 'include/MyScheme.class.php' );
+require_once ( 'include/config.php' );
 
 class QueueTest extends PHPUnit_Framework_TestCase
 {
 	public function dataProvider()
 	{
-		$scheme = new MyScheme();
-		
 		$data = array();
-		$data[] = array( $scheme, 'queue' );
-		$data[] = array( $scheme->struct, 'queue' );
-		$data[] = array( $scheme->struct[ 'key' ], 'queue' );
+		foreach ( $GLOBALS[ 'clients' ] as $client )
+		{
+			$scheme = new TestScheme( $client );
+			$data[] = array( $scheme, 'queue' );
+			$data[] = array( $scheme->struct, 'queue' );
+			$data[] = array( $scheme->struct[ 'key' ], 'queue' );
+		}
 		return $data;
 	}
 	
