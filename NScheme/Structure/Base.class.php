@@ -43,19 +43,19 @@ class NScheme_Structure_Base implements ArrayAccess
 	{
 		if ( !isset( $this->_scheme[ $key ] ) )
 		{
-			throw new Exception( sprintf( 'Key "%s" not found', $key ) );
+			throw new NScheme_Exception( sprintf( 'Key "%s" not found', $key ) );
 		}
 		if ( is_array( $this->_scheme[ $key ] ) )
 		{
-			return new NScheme_Structure_Base( $this->_client, $this->_scheme[ $key ], array_merge( $this->_path, 
-				array( $key ) ) );
+			return new NScheme_Structure_Base( $this->_client, $this->_scheme[ $key ], array_merge( 
+				$this->_path, array( $key ) ) );
 		}
 		elseif ( $this->_scheme[ $key ] == 'hash' )
 		{
 			if ( !isset( $this->_instances[ $key ] ) )
 			{
-				$this->_instances[ $key ] = new NScheme_Structure_Base( $this->_client, array(), array_merge( $this->_path, 
-					array( $key ) ) );
+				$this->_instances[ $key ] = new NScheme_Structure_Base( $this->_client, array(), array_merge( 
+					$this->_path, array( $key ) ) );
 			}
 			return $this->_instances[ $key ];
 		}
@@ -63,8 +63,8 @@ class NScheme_Structure_Base implements ArrayAccess
 		{
 			if ( !isset( $this->_instances[ $key ] ) )
 			{
-				$this->_instances[ $key ] = new NScheme_Structure_Set( $this->_client, array_merge( $this->_path, 
-					array( $key ) ) );
+				$this->_instances[ $key ] = new NScheme_Structure_Set( $this->_client, array_merge( 
+					$this->_path, array( $key ) ) );
 			}
 			return $this->_instances[ $key ];
 		}
@@ -72,8 +72,8 @@ class NScheme_Structure_Base implements ArrayAccess
 		{
 			if ( !isset( $this->_instances[ $key ] ) )
 			{
-				$this->_instances[ $key ] = new NScheme_Structure_Queue( $this->_client, array_merge( $this->_path, 
-					array( $key ) ) );
+				$this->_instances[ $key ] = new NScheme_Structure_Queue( $this->_client, array_merge( 
+					$this->_path, array( $key ) ) );
 			}
 			return $this->_instances[ $key ];
 		}
@@ -81,8 +81,8 @@ class NScheme_Structure_Base implements ArrayAccess
 		{
 			if ( !isset( $this->_instances[ $key ] ) )
 			{
-				$this->_instances[ $key ] = new NScheme_Structure_Stack( $this->_client, array_merge( $this->_path, 
-					array( $key ) ) );
+				$this->_instances[ $key ] = new NScheme_Structure_Stack( $this->_client, array_merge( 
+					$this->_path, array( $key ) ) );
 			}
 			return $this->_instances[ $key ];
 		}
@@ -97,7 +97,7 @@ class NScheme_Structure_Base implements ArrayAccess
 	{
 		if ( !isset( $this->_scheme[ $key ] ) )
 		{
-			throw new Exception( sprintf( 'Key "%s" not found', $key ) );
+			throw new NScheme_Exception( sprintf( 'Key "%s" not found', $key ) );
 		}
 		$path = array_merge( $this->_path, array( $key ) );
 		return $this->_client->valueSet( implode( ':', $path ), $value );
