@@ -18,25 +18,25 @@ class NScheme_Structure_Set implements ArrayAccess, Iterator, Countable
 	
 	public function clear()
 	{
-		$this->_client->del( $this->_key );
+		$this->_client->setClear( $this->_key );
 		return $this;
 	}
 	
 	public function add( $value )
 	{
-		$this->_client->sadd( $this->_key, $value );
+		$this->_client->setAdd( $this->_key, $value );
 		return $this;
 	}
 	
 	public function del( $value )
 	{
-		$this->_client->srem( $this->_key, $value );
+		$this->_client->setDel( $this->_key, $value );
 		return $this;
 	}
 	
 	public function exists( $value )
 	{
-		return ( bool ) $this->_client->sismember( $this->_key, $value );
+		return $this->_client->setExists( $this->_key, $value );
 	}
 	
 	public function isEmpty()
@@ -46,12 +46,12 @@ class NScheme_Structure_Set implements ArrayAccess, Iterator, Countable
 	
 	public function getCount()
 	{
-		return ( int ) $this->_client->scard( $this->_key );
+		return $this->_client->setGetCount( $this->_key );
 	}
 	
 	public function get()
 	{
-		return $this->_client->smembers( $this->_key );
+		return $this->_client->setGet( $this->_key );
 	}
 	
 	/**

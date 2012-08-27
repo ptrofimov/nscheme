@@ -69,6 +69,36 @@ class NScheme_Adapter_TinyRedisClient extends NScheme_Adapter
 		return $this->_client->rpush( $key, $value );
 	}
 	
+	public function setClear( $key )
+	{
+		return $this->_client->del( $key );
+	}
+	
+	public function setGetCount( $key )
+	{
+		return ( int ) $this->_client->scard( $key );
+	}
+	
+	public function setExists( $key, $value )
+	{
+		return ( bool ) $this->_client->sismember( $key, $value );
+	}
+	
+	public function setAdd( $key, $value )
+	{
+		return $this->_client->sadd( $key, $value );
+	}
+	
+	public function setDel( $key, $value )
+	{
+		return $this->_client->srem( $key, $value );
+	}
+	
+	public function setGet( $key )
+	{
+		return $this->_client->smembers( $key );
+	}
+	
 	/*  old methods*/
 	
 	public function sadd( $key, $value )

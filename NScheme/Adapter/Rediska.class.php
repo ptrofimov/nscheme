@@ -78,4 +78,40 @@ class NScheme_Adapter_Rediska extends NScheme_Adapter
 		$list = new Rediska_Key_List( $key );
 		return $list->append( $value );
 	}
+	
+	public function setClear( $key )
+	{
+		$key = new Rediska_Key( $key );
+		return $key->delete();
+	}
+	
+	public function setGetCount( $key )
+	{
+		$set = new Rediska_Key_Set( $key );
+		return ( int ) $set->count();
+	}
+	
+	public function setExists( $key, $value )
+	{
+		$set = new Rediska_Key_Set( $key );
+		return ( bool ) $set->exists( $value );
+	}
+	
+	public function setAdd( $key, $value )
+	{
+		$set = new Rediska_Key_Set( $key );
+		return $set->add( $value );
+	}
+	
+	public function setDel( $key, $value )
+	{
+		$set = new Rediska_Key_Set( $key );
+		return $set->remove( $value );
+	}
+	
+	public function setGet( $key )
+	{
+		$set = new Rediska_Key_Set( $key );
+		return $set->getValues();
+	}
 }
