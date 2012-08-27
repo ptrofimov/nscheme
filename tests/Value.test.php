@@ -15,10 +15,10 @@ class ValueTest extends PHPUnit_Framework_TestCase
 		$data[] = array( $scheme->struct, 'value' );
 		$data[] = array( $scheme->struct[ 'key' ], 'value' );
 		
-		$options = array( 
+		/*$options = array( 
 			'namespace' => 'Application_', 
-			'servers' => array( array( 'host' => '127.0.0.1', 'port' => 6379 ) ) );
-		$rediska = new Rediska( $options );
+			'servers' => array( array( 'host' => '127.0.0.1', 'port' => 6379 ) ) );*/
+		$rediska = new Rediska( array( 'servers' => array( array( 'host' => '127.0.0.1', 'port' => 6379 ) ) ) );
 		
 		$scheme = new TestScheme( $rediska );
 		$data[] = array( $scheme, 'value' );
