@@ -99,6 +99,21 @@ class NScheme_Adapter_TinyRedisClient extends NScheme_Adapter
 		return $this->_client->smembers( $key );
 	}
 	
+	public function hashSet( $key, $value )
+	{
+		return $this->_client->set( $key, $value );
+	}
+	
+	public function hashGet( $key )
+	{
+		return $this->_client->get( $key );
+	}
+	
+	public function hashDel( $key )
+	{
+		return $this->_client->del( $key );
+	}
+	
 	/*  old methods*/
 	
 	public function sadd( $key, $value )

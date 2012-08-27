@@ -114,4 +114,20 @@ class NScheme_Adapter_Rediska extends NScheme_Adapter
 		$set = new Rediska_Key_Set( $key );
 		return $set->getValues();
 	}
+	
+	public function hashSet( $key, $value )
+	{
+		return $this->_client->set( $key, $value );
+	}
+	
+	public function hashGet( $key )
+	{
+		return $this->_client->get( $key );
+	}
+	
+	public function hashDel( $key )
+	{
+		$key = new Rediska_Key( $key );
+		return $key->delete();
+	}
 }

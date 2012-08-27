@@ -117,7 +117,7 @@ class NScheme_Structure_Base implements ArrayAccess
 	{
 		//return $this->set( $offset, $value );
 		$path = array_merge( $this->_path, array( md5( $offset ) ) );
-		return $this->_client->set( implode( ':', $path ), $value );
+		return $this->_client->hashSet( implode( ':', $path ), $value );
 	
 	}
 	public function offsetExists( $offset )
@@ -127,7 +127,8 @@ class NScheme_Structure_Base implements ArrayAccess
 	}
 	public function offsetUnset( $offset )
 	{
-		return $this->del( $offset );
+		$path = array_merge( $this->_path, array( md5( $offset ) ) );
+		return $this->_client->hashDel( implode( ':', $path ) );
 		//return $this->set( $offset, null );
 	}
 	
@@ -137,7 +138,7 @@ class NScheme_Structure_Base implements ArrayAccess
 		if ( empty( $this->_scheme ) )
 		{
 			$path = array_merge( $this->_path, array( md5( $offset ) ) );
-			return $this->_client->get( implode( ':', $path ) );
+			return $this->_client->hashGet( implode( ':', $path ) );
 		}
 		$path = array_merge( $this->_path, array( md5( $offset ) ) );
 		return new NScheme_Structure_Base( $this->_client, $this->_scheme, $path );
@@ -162,7 +163,7 @@ class NScheme_Structure_Base implements ArrayAccess
 	public function del( $key )
 	{
 		$path = array_merge( $this->_path, array( md5( $key ) ) );
-		$this->_client->del( implode( ':', $path ) );
+		$this->_client->hashDel( implode( ':', $path ) );
 		return $this;
 	}
 }
