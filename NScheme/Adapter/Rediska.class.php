@@ -17,70 +17,34 @@ class NScheme_Adapter_Rediska extends NScheme_Adapter
 		return $this->_client->get( $key );
 	}
 	
-	/*  old methods*/
-	
-	public function set( $key, $value )
+	public function stackClear( $key )
 	{
-		return $this->_client->set( $key, $value );
+		$key = new Rediska_Key( $key );
+		return $key->delete();
 	}
 	
-	public function get( $key )
+	public function stackPush( $key, $value )
 	{
-		return $this->_client->get( $key );
+		$list = new Rediska_Key_List( $key );
+		return $list->append( $value );
 	}
 	
-	public function sadd( $key, $value )
+	public function stackPeek( $key )
 	{
-		return $this->_client->sadd( $key, $value );
+		$list = new Rediska_Key_List( $key );
+		$result = $list->getValues( -1, 1 );
+		return !empty( $result ) ? reset( $result ) : null;
 	}
 	
-	public function sismember( $key, $value )
+	public function stackPop( $key )
 	{
-		return $this->_client->sismember( $key, $value );
+		$list = new Rediska_Key_List( $key );
+		return $list->pop();
 	}
 	
-	public function smembers( $key )
+	public function stackGetCount( $key )
 	{
-		return $this->_client->smembers( $key );
-	}
-	
-	public function rpush( $key, $value )
-	{
-		return $this->_client->rpush( $key, $value );
-	}
-	
-	public function llen( $key )
-	{
-		return $this->_client->llen( $key );
-	}
-	
-	public function lpop( $key )
-	{
-		return $this->_client->lpop( $key );
-	}
-	
-	public function rpop( $key )
-	{
-		return $this->_client->rpop( $key );
-	}
-	
-	public function del( $key )
-	{
-		return $this->_client->del( $key );
-	}
-	
-	public function lrange( $key, $start, $stop )
-	{
-		return $this->_client->lrange( $key, $start, $stop );
-	}
-	
-	public function scard( $key )
-	{
-		return $this->_client->scard( $key );
-	}
-	
-	public function srem( $key, $value )
-	{
-		return $this->_client->srem( $key, $value );
+		$list = new Rediska_Key_List( $key );
+		return ( int ) $list->count();
 	}
 }

@@ -2,20 +2,20 @@
 /**
  * @author Petr Trofimov
  */
-require_once ( dirname( __FILE__ ) . '/../NScheme/NScheme.class.php' );
-require_once ( 'include/TinyRedisClient.class.php' );
-require_once ( 'include/MyScheme.class.php' );
+require_once ( 'include/config.php' );
 
 class StackTest extends PHPUnit_Framework_TestCase
 {
 	public function dataProvider()
 	{
-		$scheme = new MyScheme();
-		
 		$data = array();
-		$data[] = array( $scheme, 'stack' );
-		$data[] = array( $scheme->struct, 'stack' );
-		$data[] = array( $scheme->struct[ 'key' ], 'stack' );
+		foreach ( $GLOBALS[ 'clients' ] as $client )
+		{
+			$scheme = new TestScheme( $client );
+			$data[] = array( $scheme, 'stack' );
+			$data[] = array( $scheme->struct, 'stack' );
+			$data[] = array( $scheme->struct[ 'key' ], 'stack' );
+		}
 		return $data;
 	}
 	

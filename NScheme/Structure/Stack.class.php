@@ -19,25 +19,24 @@ class NScheme_Structure_Stack implements ArrayAccess, Iterator, Countable
 	
 	public function clear()
 	{
-		$this->_client->del( $this->_key );
+		$this->_client->stackClear( $this->_key );
 		return $this;
 	}
 	
 	public function push( $value )
 	{
-		$this->_client->rpush( $this->_key, $value );
+		$this->_client->stackPush( $this->_key, $value );
 		return $this;
 	}
 	
 	public function peek()
 	{
-		$list = $this->_client->lrange( $this->_key, -1, 1 );
-		return !empty( $list ) ? reset( $list ) : null;
+		return $this->_client->stackPeek( $this->_key );
 	}
 	
 	public function pop()
 	{
-		return $this->_client->rpop( $this->_key );
+		return $this->_client->stackPop( $this->_key );
 	}
 	
 	public function isEmpty()
@@ -47,7 +46,7 @@ class NScheme_Structure_Stack implements ArrayAccess, Iterator, Countable
 	
 	public function getCount()
 	{
-		return ( int ) $this->_client->llen( $this->_key );
+		return $this->_client->stackGetCount( $this->_key );
 	}
 	
 	/**

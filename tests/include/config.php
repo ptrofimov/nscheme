@@ -6,4 +6,5 @@ require_once ( 'TestScheme.class.php' );
 
 $clients = array( 
 	new TinyRedisClient( 'localhost:6379' ), 
-	new Rediska( array( 'servers' => array( array( 'host' => 'localhost', 'port' => 6379 ) ) ) ) );
+	new Rediska( array( 'servers' => array( array( 'host' => 'localhost', 'port' => 6379 ) ) ) )
+		 );
