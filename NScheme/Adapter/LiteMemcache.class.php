@@ -54,28 +54,50 @@ class NScheme_Adapter_LiteMemcache extends NScheme_Adapter
 	
 	public function queueClear( $key )
 	{
-		return $this->_client->del( $key );
+		$keys = $this->_client->get( array( $key . ':start', $key . ':end' ) );
+		for( $i = $keys[ $key . ':start' ]; $i < $keys[ $key . ':end' ]; $i++ )
+		{
+			$this->_client->del( $key . ':' . $i );
+		}
+		$this->_client->set( $key . ':start', 0 );
+		$this->_client->set( $key . ':end', 0 );
 	}
 	
 	public function queueGetCount( $key )
 	{
-		return ( int ) $this->_client->llen( $key );
+		$keys = $this->_client->get( array( $key . ':start', $key . ':end' ) );
+		return ( int ) ( $keys[ $key . ':end' ] - $keys[ $key . ':start' ] );
 	}
 	
 	public function queueShift( $key )
 	{
-		return $this->_client->lpop( $key );
+		$value = null;
+		$keys = $this->_client->get( array( $key . ':start', $key . ':end' ) );
+		if ( $keys[ $key . ':start' ] < $keys[ $key . ':end' ] )
+		{
+			$value = $this->_client->get( $key . ':' . $keys[ $key . ':start' ] );
+			$this->_client->del( $key . ':' . $keys[ $key . ':start' ] );
+			$this->_client->set( $key . ':start', $keys[ $key . ':start' ] + 1 );
+		}
+		return $value;
 	}
 	
 	public function queuePeek( $key )
 	{
-		$list = $this->_client->lrange( $key, 0, 1 );
-		return !empty( $list ) ? reset( $list ) : null;
+		$value = null;
+		$keys = $this->_client->get( array( $key . ':start', $key . ':end' ) );
+		if ( $keys[ $key . ':start' ] < $keys[ $key . ':end' ] )
+		{
+			$value = $this->_client->get( $key . ':' . $keys[ $key . ':start' ] );
+		}
+		return $value;
 	}
 	
 	public function queuePush( $key, $value )
 	{
-		return $this->_client->rpush( $key, $value );
+		$end = ( int ) $this->_client->get( $key . ':end' );
+		$this->_client->set( $key . ':' . $end, $value );
+		$this->_client->set( $key . ':end', $end + 1 );
 	}
 	
 	public function setClear( $key )
