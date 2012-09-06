@@ -132,16 +132,16 @@ class NScheme_Adapter_LiteMemcache extends NScheme_Adapter
 	
 	public function hashSet( $key, $value )
 	{
-		return $this->_client->set( $key, $value );
+		return $this->_client->set( md5( $key ), $value );
 	}
 	
 	public function hashGet( $key )
 	{
-		return $this->_client->get( $key );
+		return $this->_client->get( md5( $key ) );
 	}
 	
 	public function hashDel( $key )
 	{
-		return $this->_client->del( $key );
+		return $this->_client->del( md5( $key ) );
 	}
 }
