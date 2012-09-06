@@ -102,32 +102,84 @@ class NScheme_Adapter_LiteMemcache extends NScheme_Adapter
 	
 	public function setClear( $key )
 	{
-		return $this->_client->del( $key );
+		$set = ( string ) $this->_client->get( $key . ':set' );
+		$hashes = explode( ',', $set );
+		if ( $set )
+		{
+			foreach ( $hashes as $hash )
+			{
+				$this->_client->del( $key . ':' . $hash );
+			}
+		}
+		$this->_client->set( $key . ':set', '' );
 	}
 	
 	public function setGetCount( $key )
 	{
-		return ( int ) $this->_client->scard( $key );
+		$set = ( string ) $this->_client->get( $key . ':set' );
+		$hashes = explode( ',', $set );
+		return $set ? count( $hashes ) : 0;
 	}
 	
 	public function setExists( $key, $value )
 	{
-		return ( bool ) $this->_client->sismember( $key, $value );
+		return ( bool ) $this->_client->get( $key . ':' . md5( $value ) );
 	}
 	
 	public function setAdd( $key, $value )
 	{
-		return $this->_client->sadd( $key, $value );
+		$found = false;
+		$set = ( string ) $this->_client->get( $key . ':set' );
+		$hashes = $set ? explode( ',', $set ) : array();
+		$hash = md5( $value );
+		for( $i = 0, $ic = count( $hashes ); $i < $ic; $i++ )
+		{
+			if ( $hashes[ $i ] == $hash )
+			{
+				$found = true;
+				break;
+			}
+		}
+		if ( !$found )
+		{
+			$hashes[] = $hash;
+			$this->_client->set( $key . ':set', implode( ',', $hashes ) );
+			$this->_client->set( $key . ':' . $hash, $value );
+		}
 	}
 	
 	public function setDel( $key, $value )
 	{
-		return $this->_client->srem( $key, $value );
+		$found = false;
+		$set = ( string ) $this->_client->get( $key . ':set' );
+		$hashes = $set ? explode( ',', $set ) : array();
+		$hash = md5( $value );
+		for( $i = 0, $ic = count( $hashes ); $i < $ic; $i++ )
+		{
+			if ( $hashes[ $i ] == $hash )
+			{
+				unset( $hashes[ $i ] );
+				$found = true;
+				break;
+			}
+		}
+		if ( $found )
+		{
+			$this->_client->set( $key . ':set', implode( ',', $hashes ) );
+			$this->_client->del( $key . ':' . $hash );
+		}
 	}
 	
 	public function setGet( $key )
 	{
-		return $this->_client->smembers( $key );
+		$values = array();
+		$set = ( string ) $this->_client->get( $key . ':set' );
+		$hashes = $set ? explode( ',', $set ) : array();
+		foreach ( $hashes as $hash )
+		{
+			$values[] = $this->_client->get( $key . ':' . $hash );
+		}
+		return $values;
 	}
 	
 	public function hashSet( $key, $value )
