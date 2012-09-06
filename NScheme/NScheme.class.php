@@ -32,6 +32,11 @@ class NScheme extends NScheme_Structure_Base
 			require_once ( 'Adapter/Rediska.class.php' );
 			$this->_client = new NScheme_Adapter_Rediska( $client );
 		}
+		elseif ( get_class( $client ) == 'LiteMemcache' )
+		{
+			require_once ( 'Adapter/LiteMemcache.class.php' );
+			$this->_client = new NScheme_Adapter_LiteMemcache( $client );
+		}
 		else
 		{
 			throw new NScheme_Exception( sprintf( 'Unknown NoSQL client "%s"', get_class( $client ) ) );
